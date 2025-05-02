@@ -43,3 +43,8 @@ def store_pdf_to_chromaDB(file_path):
     store_sentences_in_chromaDB(sentences)
     print(f"{len(sentences)} sentences added to chromaDB")
     return len(sentences)
+
+def search_in_chroma(question, top_k=7):
+    query_embedding = embed_sentences(question)[0]
+    result = collection.query(query_embeddings=[query_embedding], n_results=top_k)
+    return result
