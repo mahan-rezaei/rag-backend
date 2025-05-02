@@ -28,3 +28,6 @@ def proccess_text_to_sentences(text):
     norm_text = normalizer.normalize(text)
     sentenses = sent_tokenizer.tokenize(norm_text)
     return sentenses
+
+def embed_sentences(sentences):
+    return embbeding_model.encode(sentences).tolist()
