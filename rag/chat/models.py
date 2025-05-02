@@ -7,3 +7,9 @@ class Document(models.Model):
 
     uploaded_at = models.DateTimeField(auto_now_add=True)
     
+
+class QArecord(models.Model):
+    question = models.TextField()
+    answre = models.TextField()
+
+    asked_at = models.DateTimeField(auto_now_add=True)
