@@ -43,26 +43,28 @@ def store_sentences_in_chromaDB(sentences):
 def store_pdf_to_chromaDB(file_path):
     file_name = os.path.basename(file_path)
     doc, created = Document.objects.get_or_create(file_name=file_name)
-    if doc.is_proccessed:
-        print("این فایل قبلاً پردازش شده.")
-        return
-    
+
     text = extract_text_from_pdf(file_path)
     sentences = proccess_text_to_sentences(text)
     store_sentences_in_chromaDB(sentences)
-    doc.is_processed = True
-    doc.save()
 
     print(f"{len(sentences)} sentences added to chromaDB")
     return len(sentences)
     
 
 def search_in_chroma(question, top_k=7):
-    query_embedding = embed_sentences(question)[0]
-    result = collection.query(query_embeddings=[query_embedding], n_results=top_k)
+    query_embedding = embed_sentences(question)   
+    result = collection.query(
+        query_embeddings=[query_embedding],  
+        n_results=top_k
+    )
     return result
 
 def initialize_chroma_from_pdf():
     file_path = "files/shahname.pdf"
     result = store_pdf_to_chromaDB(file_path)
+    print(result)
+
+def show_chroma_data():
+    result = collection.get()
     print(result)

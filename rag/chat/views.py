@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .utils import initialize_chroma_from_pdf, embed_sentences, search_in_chroma
+from .utils import initialize_chroma_from_pdf, embed_sentences, search_in_chroma, show_chroma_data
 
 import requests
 
@@ -25,21 +25,29 @@ class ChatView(APIView):
             return Response({'error': 'question is requered.'},
                             status=status.HTTP_400_BAD_REQUEST)
         try:
-            print("helllllllllllllllllllllllllllllllllllll")
+            print("*"*90)
+            print("data"*90)
+            show_chroma_data()
             docs = search_in_chroma(question)
+            print("*"*90)
+            print("docs")
             print(docs)
-            context = "\n".join([doc['documents'] for doc in docs])
+            documents_list = docs.get('documents', [])
+            context = "\n".join([doc for sublist in documents_list for doc in sublist])
             prompt = f"اطلاعات زیر رو بخون و به سوال پاسخ بده\n{context}\n\nسوال:{question}\n\nپاسخ:"
-            response = requests.post("http://localhost:1234/v1/chat/completions",
+            print("*"*90)
+            print("prompt")
+            print(prompt)
+            response = requests.post("http://127.0.0.1:1234/v1/chat/completions",
                          headers={"Content-Type": "application/json"},
                          json={
-                             "model": "gemma-3-4b-it-gguf",
+                             "model": "gemma-3-4b-it",
                              "messages": [{'role': 'user', 'content': prompt}],
                              "temperature": 0.4
                          })
             response.raise_for_status()
             result = response.json()
-            answre = result["choices"][0]["messages"]["content"]
+            answre = result["choices"][0]["message"]["content"]
             
 
             return Response({'answre': answre},
