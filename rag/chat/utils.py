@@ -23,3 +23,8 @@ def extract_text_from_pdf(file_path):
     except Exception as e:
         print("error in reading pdf file")
     return text
+
+def proccess_text_to_sentences(text):
+    norm_text = normalizer.normalize(text)
+    sentenses = sent_tokenizer.tokenize(norm_text)
+    return sentenses
