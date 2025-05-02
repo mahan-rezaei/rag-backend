@@ -31,3 +31,8 @@ def proccess_text_to_sentences(text):
 
 def embed_sentences(sentences):
     return embbeding_model.encode(sentences).tolist()
+
+def store_sentences_in_chromaDB(sentences):
+    embeddings = embed_sentences(sentences)
+    ids = [f"chunc{i}" for i in range(len(sentences))]
+    collection.add(documents=sentences, embeddings=embeddings, ids=ids)
