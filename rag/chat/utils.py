@@ -24,8 +24,8 @@ def extract_text_from_pdf(file_path):
                 if text:
                     full_text += text + "\n"
     except Exception as e:
-        print("error in reading pdf file")
-    return text
+        print(f"error in reading pdf file{str(e)}")
+    return full_text
 
 def proccess_text_to_sentences(text):
     norm_text = normalizer.normalize(text)
@@ -43,7 +43,7 @@ def store_sentences_in_chromaDB(sentences):
 def store_pdf_to_chromaDB(file_path):
     file_name = os.path.basename(file_path)
     doc, created = Document.objects.get_or_create(file_name=file_name)
-    if doc.is_processed:
+    if doc.is_proccessed:
         print("این فایل قبلاً پردازش شده.")
         return
     
@@ -55,6 +55,7 @@ def store_pdf_to_chromaDB(file_path):
 
     print(f"{len(sentences)} sentences added to chromaDB")
     return len(sentences)
+    
 
 def search_in_chroma(question, top_k=7):
     query_embedding = embed_sentences(question)[0]
@@ -62,6 +63,6 @@ def search_in_chroma(question, top_k=7):
     return result
 
 def initialize_chroma_from_pdf():
-    file_path = "rag/files/farsi-11.pdf"
+    file_path = "files/shahname.pdf"
     result = store_pdf_to_chromaDB(file_path)
     print(result)
