@@ -36,3 +36,10 @@ def store_sentences_in_chromaDB(sentences):
     embeddings = embed_sentences(sentences)
     ids = [f"chunc{i}" for i in range(len(sentences))]
     collection.add(documents=sentences, embeddings=embeddings, ids=ids)
+
+def store_pdf_to_chromaDB(file_path):
+    text = extract_text_from_pdf(file_path)
+    sentences = proccess_text_to_sentences(text)
+    store_sentences_in_chromaDB(sentences)
+    print(f"{len(sentences)} sentences added to chromaDB")
+    return len(sentences)
