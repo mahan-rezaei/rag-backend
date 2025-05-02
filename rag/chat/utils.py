@@ -2,6 +2,9 @@ import PyPDF2, pdfplumber
 from hazm import SentenceTokenizer, Normalizer
 from sentence_transformers import SentenceTransformer
 import chromadb
+from .models import Document
+
+import os
 
 
 normalizer = Normalizer()
@@ -38,9 +41,18 @@ def store_sentences_in_chromaDB(sentences):
     collection.add(documents=sentences, embeddings=embeddings, ids=ids)
 
 def store_pdf_to_chromaDB(file_path):
+    file_name = os.path.basename(file_path)
+    doc, created = Document.objects.get_or_create(file_name=file_name)
+    if doc.is_processed:
+        print("این فایل قبلاً پردازش شده.")
+        return
+    
     text = extract_text_from_pdf(file_path)
     sentences = proccess_text_to_sentences(text)
     store_sentences_in_chromaDB(sentences)
+    doc.is_processed = True
+    doc.save()
+    
     print(f"{len(sentences)} sentences added to chromaDB")
     return len(sentences)
 
