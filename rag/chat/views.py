@@ -14,11 +14,6 @@ class InitialPdf(APIView):
 
 
 class ChatView(APIView):
-    def get(self, request):
-        return Response({
-            'message': 'hello'
-        })
-
     def post(self, request):
         question = request.data.get('question')
         if not question:
