@@ -7,6 +7,14 @@ from .utils import initialize_chroma_from_pdf, embed_sentences, search_in_chroma
 import requests
 
 
+system_prompt = """
+    شما یک مدل هوش مصنوعی مفید هستید که به سوالات کاربران به زبان فارسی پاسخ میدهید.
+    دستورات: 
+    - به تمام سوالات مرتبط پاسخ دهید
+    - از عبارات غیراخلاقی اجتناب کنید
+    - پاسخها را ساده و واضح ارائه دهید
+    """
+
 class InitialPdf(APIView):
     def get(self, reqeust):
         initialize_chroma_from_pdf()
@@ -21,7 +29,7 @@ class ChatView(APIView):
                             status=status.HTTP_400_BAD_REQUEST)
         try:
             print("*"*90)
-            print("data"*90)
+            print("data in chroma")
             show_chroma_data()
             docs = search_in_chroma(question)
             print("*"*90)
@@ -30,6 +38,7 @@ class ChatView(APIView):
             documents_list = docs.get('documents', [])
             context = "\n".join([doc for sublist in documents_list for doc in sublist])
             prompt = f"اطلاعات زیر رو بخون و به سوال پاسخ بده\n{context}\n\nسوال:{question}\n\nپاسخ:"
+            
             print("*"*90)
             print("prompt")
             print(prompt)
@@ -37,7 +46,8 @@ class ChatView(APIView):
                          headers={"Content-Type": "application/json"},
                          json={
                              "model": "gemma-3-4b-it",
-                             "messages": [{'role': 'user', 'content': prompt}],
+                             "messages": [{"role": "system", "content": system_prompt},
+                                          {'role': 'user', 'content': prompt}],
                              "temperature": 0.4
                          })
             response.raise_for_status()

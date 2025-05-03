@@ -29,7 +29,10 @@ def extract_text_from_pdf(file_path):
 
 def proccess_text_to_sentences(text):
     norm_text = normalizer.normalize(text)
-    sentenses = sent_tokenizer.tokenize(norm_text)
+    sentenses = [sen for sen in norm_text.split(".")]
+    print("*"*90)
+    print("sentences")
+    print(sentenses)
     return sentenses
 
 def embed_sentences(sentences):
@@ -46,11 +49,12 @@ def store_pdf_to_chromaDB(file_path):
 
     text = extract_text_from_pdf(file_path)
     sentences = proccess_text_to_sentences(text)
+    print("*"*90)
+    print(sentences)
     store_sentences_in_chromaDB(sentences)
 
     print(f"{len(sentences)} sentences added to chromaDB")
     return len(sentences)
-    
 
 def search_in_chroma(question, top_k=7):
     query_embedding = embed_sentences(question)   
@@ -61,10 +65,12 @@ def search_in_chroma(question, top_k=7):
     return result
 
 def initialize_chroma_from_pdf():
-    file_path = "files/shahname.pdf"
+    file_path = "files/medical.pdf"
     result = store_pdf_to_chromaDB(file_path)
     print(result)
 
+
+# for debug
 def show_chroma_data():
     result = collection.get()
     print(result)
